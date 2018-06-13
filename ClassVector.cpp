@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 
 class Vector {
 public:
@@ -6,9 +6,11 @@ public:
 	~Vector();
 	void push_back(int);
 	void insert_at(int index, int elem);
-	void showArray(int m_size);
+	void showArray();
 	int get_at(int index);
-	//Vector & operator= (const Vector & rhs);
+	Vector & operator= (const Vector & rhs);
+	void copyContruct(const Vector & rhs);
+	Vector (const Vector & rhs);
 private:
 	int m_size;
 	int * m_arr;
@@ -18,17 +20,23 @@ private:
 
 int main() {
 	Vector * tmp = new Vector;
-	tmp->push_back(1);
-	tmp->push_back(2);
-	tmp->push_back(3);
-	tmp->insert_at(1, 5);
-	tmp->insert_at(0, 4);
-	tmp->push_back(8);
-	tmp->push_back(10);
-	tmp->insert_at(6, 9);
-	tmp->showArray(7);
+	Vector ptr;
+	ptr.push_back(1);
+	ptr.push_back(2);
+	ptr.push_back(3);
+	ptr.insert_at(1, 5);
+	ptr.insert_at(0, 4);
+	ptr.push_back(8);
+	ptr.push_back(5);
+	ptr.insert_at(6, 9);
+	ptr.showArray();
 	std::cout << std::endl;
-	std::cout<<tmp->get_at(7);
+	//std::cout<<tmp->get_at(0);
+	Vector obj(ptr);
+	obj.showArray();
+	Vector result = obj;
+
+	result.showArray();
 
 
 	std::cout << std::endl;
@@ -41,6 +49,29 @@ Vector::Vector(const int size){
 	this->res = -1;
 
 }
+
+Vector::Vector(const Vector & rhs) {
+	Vector::copyContruct(rhs);
+}
+
+Vector & Vector::operator= (const Vector & rhs) {
+	if (this == &rhs) {
+		return *this;
+	}
+	delete[] this->m_arr;
+	copyContruct(rhs);
+	return *this;
+}
+
+void Vector::copyContruct(const Vector & rhs) {
+	this->res = rhs.res;
+	this->m_size = rhs.m_size;
+	this->m_arr = new int[rhs.m_size];
+	for (int i = 0; i < this->m_size; ++i) {
+		this->m_arr[i] = rhs.m_arr[i];
+	}
+}
+
 
 void Vector::push_back(int sum) {
 	
@@ -62,6 +93,15 @@ void Vector::push_back(int sum) {
 }
 
 void Vector::insert_at(int index, int elem) {
+	if (this->res == this->m_size - 1) {
+		int * newM_arr = new int[2 * this->m_size];
+		for (int i = 0; i < this->m_size; ++i) {
+			newM_arr[i] = this->m_arr[i];
+		}
+		delete[] this->m_arr;
+		this->m_arr = newM_arr;
+		this->m_size = this->m_size * 2;
+	}
 	int * insert = new int[this->m_size];
 	int j = 0;
 	for (int i = 0; i <= this->m_size; ++i) {
@@ -80,14 +120,16 @@ void Vector::insert_at(int index, int elem) {
 	
 }
 
-void Vector::showArray(int m_size) {
+void Vector::showArray() {
 	for (int i = 0; i < this->res+1; ++i) {
-		std::cout <<"["<< this->m_arr[i] << "]" ;
+		std::cout <<"["<< this->m_arr[i] << "]";
 	}
+	std::cout << std::endl;
 }
 
 int Vector::get_at(int index) {
 	return this->m_arr[index];
+
 }
 
 
